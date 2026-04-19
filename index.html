@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerenciamento de Abastecimento · Guarda Municipal de Ipatinga</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="./assets/logo_guarda_civil_municipal_ipatinga.png" alt="Logo Guarda Civil Municipal de Ipatinga" class="brand-logo" />
+        <div>
+          <h1>Guarda Municipal de Ipatinga</h1>
+          <p>Centro institucional de gestão operacional</p>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <button class="menu-item active" data-screen="dashboard">Iniciar</button>
+        <button class="menu-item" data-screen="abastecimentos">Abastecimentos</button>
+        <button class="menu-item" data-screen="consulta">Consulta</button>
+        <button class="menu-item" data-screen="cadastros">Cadastros</button>
+        <button class="menu-item" data-screen="config">Fluxo do sistema</button>
+      </nav>
+
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-content">
+          <span class="topbar-badge">Guarda Municipal de Ipatinga · ambiente interno</span>
+          <h2 id="screenTitle">Gerenciamento de Abastecimento</h2>
+          <p id="screenSubtitle">Controle operacional de abastecimentos, consultas e cadastros.</p>
+        </div>
+      </header>
+
+      <section id="dashboard" class="screen active">
+        <div class="panel hero-panel">
+          <div class="hero-logo-wrap">
+            <img src="./assets/logo_guarda_civil_municipal_ipatinga.png" alt="Logo da Guarda Municipal de Ipatinga" class="hero-logo" />
+          </div>
+          <div class="hero-copy">
+            <h3>Gerenciamento de Abastecimento</h3>
+            <p>Ambiente operacional da Guarda Municipal de Ipatinga para lançamentos, consultas gerenciais e manutenção de cadastros.</p>
+            <div class="dashboard-chips">
+              <span class="chip">Datas em padrão dd/mm/aa</span>
+              <span class="chip">Placa vinculada automaticamente ao prefixo</span>
+              <span class="chip">Dashboard institucional com visão executiva</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cards-grid four">
+          <article class="stat-card">
+            <span>Total de abastecimentos</span>
+            <strong id="dashTotalRegistros">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Litros no período</span>
+            <strong id="dashTotalLitros">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Valor total</span>
+            <strong id="dashTotalValor">R$ 0,00</strong>
+          </article>
+          <article class="stat-card">
+            <span>Veículos ativos</span>
+            <strong id="dashVeiculosAtivos">0</strong>
+          </article>
+        </div>
+
+        <div class="cards-grid two">
+          <article class="panel">
+            <div class="panel-head">
+              <h3>Últimos abastecimentos</h3>
+            </div>
+            <div class="table-wrap compact">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Data</th>
+                    <th>Prefixo</th>
+                    <th>Placa</th>
+                    <th>Motorista</th>
+                    <th>Valor</th>
+                  </tr>
+                </thead>
+                <tbody id="dashUltimos"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <h3>Consumo por placa e período</h3>
+            </div>
+            <div class="form-grid compact-grid">
+              <div class="field">
+                <label>Placa</label>
+                <select id="dashAggPlaca"></select>
+              </div>
+              <div class="field">
+                <label>Período</label>
+                <select id="dashAggPeriodoTipo">
+                  <option value="dias">Dias</option>
+                  <option value="semanas">Semanas</option>
+                  <option value="meses">Meses</option>
+                  <option value="anos">Anos</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Quantidade</label>
+                <input id="dashAggPeriodoValor" type="number" min="1" step="1" value="1" />
+              </div>
+              <div class="field">
+                <label>Base</label>
+                <select id="dashAggCampoData">
+                  <option value="dataAbastecimento">Data do abastecimento</option>
+                  <option value="dataLancamento">Data do lançamento</option>
+                </select>
+              </div>
+            </div>
+            <div class="actions-row">
+              <button class="btn btn-primary" id="btnCalcularDash">Calcular</button>
+            </div>
+            <div id="dashAggResultado" class="highlight-box">Selecione placa, período e quantidade.</div>
+          </article>
+        </div>
+      </section>
+
+      <section id="abastecimentos" class="screen">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Novo abastecimento</h3>
+            <span class="tag">Lançamento operacional</span>
+          </div>
+          <form id="formAbastecimento" class="form-grid">
+            <input type="hidden" id="abastecimentoId" />
+            <div class="field">
+              <label>Data do lançamento</label>
+              <input type="text" id="dataLancamento" class="date-mask" inputmode="numeric" maxlength="10" placeholder="dd/mm/aa" required />
+            </div>
+            <div class="field">
+              <label>Data do abastecimento</label>
+              <input type="text" id="dataAbastecimento" class="date-mask" inputmode="numeric" maxlength="10" placeholder="dd/mm/aa" required />
+            </div>
+            <div class="field">
+              <label>Hora</label>
+              <input type="time" id="horaAbastecimento" required />
+            </div>
+            <div class="field">
+              <label>Setor</label>
+              <select id="setorId" required></select>
+            </div>
+            <div class="field">
+              <label>Prefixo</label>
+              <select id="veiculoId" required></select>
+            </div>
+            <div class="field">
+              <label>Motorista</label>
+              <select id="motoristaId" required></select>
+            </div>
+            <div class="field">
+              <label>Inspetor em coordenação</label>
+              <select id="inspetorCoordenacao" required>
+                <option value="">Selecione</option>
+                <option value="Inspetor Estelisson">Inspetor Estelisson</option>
+                <option value="Inspetor Wallas">Inspetor Wallas</option>
+                <option value="Inspetor Gilberto">Inspetor Gilberto</option>
+                <option value="Inspetor Pereira">Inspetor Pereira</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Gerente de Abastecimento</label>
+              <select id="gerenteAbastecimento" required>
+                <option value="">Selecione</option>
+                <option value="Inspetor Estelisson">Inspetor Estelisson</option>
+                <option value="Inspetor Wallas">Inspetor Wallas</option>
+                <option value="Inspetor Gilberto">Inspetor Gilberto</option>
+                <option value="Inspetor Pereira">Inspetor Pereira</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>KM atual</label>
+              <input type="number" id="kmAtual" min="0" step="1" required />
+            </div>
+            <div class="field">
+              <label>Autorização</label>
+              <input type="text" id="autorizacao" maxlength="6" placeholder="Até 6 dígitos" />
+            </div>
+            <div class="field">
+              <label>Valor unitário</label>
+              <input type="number" id="valorUnitario" min="0" step="0.01" required />
+            </div>
+            <div class="field">
+              <label>Litros</label>
+              <input type="number" id="qtdLitros" min="0" step="0.01" required />
+            </div>
+            <div class="field readonly-field">
+              <label>Prefixo</label>
+              <input type="text" id="prefixoExibicao" readonly />
+            </div>
+            <div class="field readonly-field readonly-select-field">
+              <label>Placa vinculada</label>
+              <select id="placaExibicao" disabled>
+                <option value="">Selecione o prefixo</option>
+              </select>
+            </div>
+            <div class="field readonly-field">
+              <label>Combustível</label>
+              <input type="text" id="combustivelExibicao" readonly />
+            </div>
+            <div class="field readonly-field">
+              <label>Matrícula</label>
+              <input type="text" id="matriculaExibicao" readonly />
+            </div>
+            <div class="field readonly-field">
+              <label>Valor total</label>
+              <input type="text" id="valorTotalExibicao" readonly />
+            </div>
+            <div class="field full">
+              <label>Observação</label>
+              <textarea id="observacao" rows="3" placeholder="Informações complementares"></textarea>
+            </div>
+            <div class="actions-row full">
+              <button type="submit" class="btn btn-primary">Salvar abastecimento</button>
+              <button type="button" id="btnCancelarEdicao" class="btn btn-secondary">Cancelar edição</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Registros</h3>
+            <span class="muted">Editar e excluir disponíveis diretamente na grade</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Data</th>
+                  <th>Prefixo</th>
+                  <th>Placa</th>
+                  <th>Setor</th>
+                  <th>Motorista</th>
+                  <th>Inspetor</th>
+                  <th>Gerente</th>
+                  <th>KM</th>
+                  <th>Litros</th>
+                  <th>Valor</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="abastecimentosTabela"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="consulta" class="screen">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Consulta avançada</h3>
+          </div>
+          <div class="form-grid compact-grid">
+            <div class="field"><label>ID</label><input id="fId" type="number" /></div>
+            <div class="field"><label>Pesquisar em</label><select id="fCampoData"><option value="dataAbastecimento">Data do abastecimento</option><option value="dataLancamento">Data do lançamento</option></select></div>
+            <div class="field"><label>Período rápido</label><select id="fPeriodoTipo"><option value="">Livre</option><option value="dias">Dias</option><option value="semanas">Semanas</option><option value="meses">Meses</option><option value="anos">Anos</option></select></div>
+            <div class="field"><label>Quantidade</label><input id="fPeriodoValor" type="number" min="1" step="1" placeholder="Ex.: 7" /></div>
+            <div class="field"><label>Data inicial</label><input id="fDataIni" type="text" class="date-mask" inputmode="numeric" maxlength="10" placeholder="dd/mm/aa" /></div>
+            <div class="field"><label>Data final</label><input id="fDataFim" type="text" class="date-mask" inputmode="numeric" maxlength="10" placeholder="dd/mm/aa" /></div>
+            <div class="field"><label>Setor</label><select id="fSetor"></select></div>
+            <div class="field"><label>Veículo</label><select id="fVeiculo"></select></div>
+            <div class="field"><label>Placa</label><select id="fPlaca"></select></div>
+            <div class="field"><label>Motorista</label><select id="fMotorista"></select></div>
+            <div class="field"><label>Autorização</label><input id="fAutorizacao" type="text" /></div>
+            <div class="field"><label>Busca livre</label><input id="fTermoLivre" type="text" placeholder="Placa, motorista, setor, observação..." /></div>
+          </div>
+          <div class="actions-row">
+            <button class="btn btn-primary" id="btnFiltrarConsulta">Aplicar filtros</button>
+            <button class="btn btn-secondary" id="btnLimparConsulta">Limpar filtros</button>
+          </div>
+        </div>
+
+        <div class="cards-grid three">
+          <article class="stat-card small"><span>Registros filtrados</span><strong id="consultaTotal">0</strong></article>
+          <article class="stat-card small"><span>Litros filtrados</span><strong id="consultaLitros">0</strong></article>
+          <article class="stat-card small"><span>Valor filtrado</span><strong id="consultaValor">R$ 0,00</strong></article>
+        </div>
+        <div id="consultaPeriodoInfo" class="highlight-box">Período livre.</div>
+
+        <div class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Lançamento</th>
+                  <th>Abastecimento</th>
+                  <th>Hora</th>
+                  <th>Setor</th>
+                  <th>Veículo</th>
+                  <th>Prefixo</th>
+                  <th>Placa</th>
+                  <th>Motorista</th>
+                  <th>Inspetor</th>
+                  <th>Gerente</th>
+                  <th>KM</th>
+                  <th>Litros</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody id="consultaTabela"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="cadastros" class="screen">
+        <div class="cards-grid two">
+          <article class="panel">
+            <div class="panel-head"><h3>Cadastro de veículos</h3></div>
+            <form id="formVeiculo" class="form-grid compact-grid">
+              <input type="hidden" id="veiculoEditId" />
+              <div class="field"><label>Tipo</label><select id="veiculoPrefixoTipo" required><option value="Vtr">Vtr</option><option value="MP">MP</option></select></div>
+              <div class="field"><label>Prefixo</label><input id="veiculoPrefixoNumero" required type="number" min="1" max="999" step="1" placeholder="Ex.: 006" /></div>
+              <div class="field readonly-field"><label>Identificação final</label><input id="veiculoPrefixo" readonly placeholder="Ex.: Vtr 006 ou MP 001" /></div>
+              <div class="field"><label>Placa</label><input id="veiculoPlaca" required placeholder="Ex.: ABC1D23" /></div>
+              <div class="field"><label>Combustível</label><select id="veiculoCombustivel"></select></div>
+              <div class="field"><label>Status</label><select id="veiculoAtivo"><option value="true">Ativo</option><option value="false">Inativo</option></select></div>
+              <div class="actions-row full"><button class="btn btn-primary" type="submit">Salvar veículo</button></div>
+            </form>
+            <div class="table-wrap compact">
+              <table>
+                <thead><tr><th>Tipo</th><th>Prefixo</th><th>Placa</th><th>Combustível</th><th>Status</th><th>Ações</th></tr></thead>
+                <tbody id="veiculosTabela"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head"><h3>Cadastro de motoristas</h3></div>
+            <form id="formMotorista" class="form-grid compact-grid">
+              <input type="hidden" id="motoristaEditId" />
+              <div class="field"><label>Nome</label><input id="motoristaNome" required /></div>
+              <div class="field"><label>Matrícula</label><input id="motoristaMatricula" required /></div>
+              <div class="field"><label>Status</label><select id="motoristaAtivo"><option value="true">Ativo</option><option value="false">Inativo</option></select></div>
+              <div class="actions-row full"><button class="btn btn-primary" type="submit">Salvar motorista</button></div>
+            </form>
+            <div class="table-wrap compact">
+              <table>
+                <thead><tr><th>Nome</th><th>Matrícula</th><th>Status</th><th>Ações</th></tr></thead>
+                <tbody id="motoristasTabela"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+
+        <div class="cards-grid two">
+          <article class="panel">
+            <div class="panel-head"><h3>Cadastro de setores</h3></div>
+            <form id="formSetor" class="form-grid compact-grid">
+              <input type="hidden" id="setorEditId" />
+              <div class="field"><label>Nome do setor</label><input id="setorNome" required /></div>
+              <div class="field"><label>Sigla</label><input id="setorSigla" /></div>
+              <div class="actions-row full"><button class="btn btn-primary" type="submit">Salvar setor</button></div>
+            </form>
+            <div class="table-wrap compact">
+              <table>
+                <thead><tr><th>Setor</th><th>Sigla</th><th>Ações</th></tr></thead>
+                <tbody id="setoresTabela"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head"><h3>Cadastro de combustíveis</h3></div>
+            <form id="formCombustivel" class="form-grid compact-grid">
+              <input type="hidden" id="combustivelEditId" />
+              <div class="field"><label>Nome</label><input id="combustivelNome" required /></div>
+              <div class="actions-row full"><button class="btn btn-primary" type="submit">Salvar combustível</button></div>
+            </form>
+            <div class="table-wrap compact">
+              <table>
+                <thead><tr><th>Combustível</th><th>Ações</th></tr></thead>
+                <tbody id="combustiveisTabela"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="config" class="screen">
+        <div class="panel controls-panel">
+          <div class="panel-head">
+            <h3>Controles do ambiente</h3>
+            <span class="tag success">Protótipo funcional</span>
+          </div>
+          <p class="muted">Somente nesta tela ficam disponíveis as ações de importação, exportação, limpeza de lançamentos e restauração da base de demonstração.</p>
+          <div class="actions-row controls-actions">
+            <button id="btnImportar" class="btn btn-primary" type="button">Importar JSON</button>
+            <button id="btnExportar" class="btn btn-secondary" type="button">Exportar JSON</button>
+            <button id="btnLimparLancamentos" class="btn btn-warning" type="button">Limpar lançamentos</button>
+            <button id="btnResetDemo" class="btn btn-danger" type="button">Reset demo</button>
+            <input id="inputImportarJson" type="file" accept=".json,application/json" hidden />
+          </div>
+          <div id="importStatus" class="import-status muted">Importe um arquivo JSON exportado pelo sistema quando houver necessidade de restauração ou migração local da base.</div>
+        </div>
+        <div class="cards-grid two">
+          <article class="panel">
+            <div class="panel-head"><h3>Fluxo operacional</h3></div>
+            <ol class="flow-list">
+              <li>Manter cadastros de veículos, motoristas, setores e combustíveis.</li>
+              <li>Lançar abastecimento com veículo vinculado à placa e combustível.</li>
+              <li>Validar matrícula, autorização, km e valor total automaticamente.</li>
+              <li>Consultar por filtros e acompanhar agregados.</li>
+              <li>Gerenciar dados para integração com API e banco.</li>
+            </ol>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><h3>Estrutura prevista de produção</h3></div>
+            <ul class="flow-list">
+              <li>Front-end web responsivo</li>
+              <li>API REST com autenticação</li>
+              <li>Banco PostgreSQL ou MySQL</li>
+              <li>Auditoria de inclusão, edição e exclusão</li>
+              <li>Perfis: administrador, operador, consulta</li>
+            </ul>
+          </article>
+        </div>
+        <div class="dev-credit">Desenvolvido por: Adilson Dias Gomes em 19abril2026.</div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
